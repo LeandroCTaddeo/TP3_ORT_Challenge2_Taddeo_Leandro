@@ -1,0 +1,49 @@
+# --- Android / Gradle ---
+.gradle/
+**/build/
+local.properties
+.cxx/
+.externalNativeBuild/
+captures/
+**/intermediates/
+**/generated/
+**/outputs/
+**/.transforms/
+.gradle-cache/
+
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
+
+# --- IDE (Android Studio / IntelliJ) ---
+.idea/
+*.iml
+
+# --- Artefactos de distribución ---
+*.apk
+*.aab
+*.ap_
+*.aar
+
+# --- Logs / SO ---
+*.log
+.DS_Store
+Thumbs.db
+
+# --- Llaves y secretos ---
+*.jks
+*.keystore
+keystore.properties
+*.keystore.properties
+*.pem
+*.p12
+google-services.json
+firebase_app_id.json
+fabric.properties
+
+# --- Fastlane / CI artefacts ---
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
