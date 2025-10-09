@@ -45,7 +45,11 @@ class MainActivity : ComponentActivity() {
                         composable("home") {
                             HomeScreen(
                                 modifier = Modifier.fillMaxSize(),
-                                onSelectFromPanel = { dest -> nav.navigate(routes.getValue(dest)) }
+                                onSelectFromPanel = { dest ->
+                                    nav.navigate(routes.getValue(dest)) {
+                                        launchSingleTop = true
+                                    }
+                                }
                             )
                         }
 
@@ -56,7 +60,11 @@ class MainActivity : ComponentActivity() {
                                 onAddFavourite = { p ->
                                     if (favourites.none { it.id == p.id }) favourites += p
                                 },
-                                onPanelSelect = { dest -> nav.navigate(routes.getValue(dest)) }
+                                onPanelSelect = { dest ->
+                                    nav.navigate(routes.getValue(dest)) {
+                                        launchSingleTop = true
+                                    }
+                                }
                             )
                         }
 
@@ -64,21 +72,29 @@ class MainActivity : ComponentActivity() {
                             FavouritesScreen(
                                 items = favourites,
                                 modifier = Modifier.fillMaxSize(),
-                                onPanelSelect = { dest -> nav.navigate(routes.getValue(dest)) }
+                                onPanelSelect = { dest ->
+                                    nav.navigate(routes.getValue(dest)) {
+                                        launchSingleTop = true
+                                    }
+                                }
                             )
                         }
 
                         composable("settings") {
                             SettingsScreen(
                                 modifier = Modifier.fillMaxSize(),
-                                onPanelSelect = { dest -> nav.navigate(routes.getValue(dest)) }
+                                onPanelSelect = { dest ->
+                                    nav.navigate(routes.getValue(dest)) {
+                                        launchSingleTop = true
+                                    }
+                                }
                             )
                         }
 
                         composable("profile") {
-                            SettingsScreen( // placeholder
+                            ProfileScreen(
                                 modifier = Modifier.fillMaxSize(),
-                                onPanelSelect = { dest -> nav.navigate(routes.getValue(dest)) }
+                                onBack = { nav.popBackStack() }
                             )
                         }
                     }
