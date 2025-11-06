@@ -1,15 +1,57 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# --- Android / Gradle ---
+.gradle/
+.gradle-cache/
+**/build/
+**/intermediates/
+**/generated/
+**/outputs/
+**/.transforms/
+.cxx/
+.externalNativeBuild/
+captures/
 local.properties
+
+# --- Gradle wrapper (sí queremos estos) ---
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
+
+# --- IDE (Android Studio / IntelliJ) ---
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# --- Kotlin / misc ---
+.kotlin/
+*.hprof
+
+# --- Distribución / artefactos ---
+*.apk
+*.aab
+*.ap_
+*.aar
+
+# --- Logs / SO ---
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Llaves y secretos ---
+*.jks
+*.keystore
+keystore.properties
+*.keystore.properties
+*.pem
+*.p12
+google-services.json
+firebase_app_id.json
+fabric.properties
+
+# --- Fastlane / CI artefacts ---
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output

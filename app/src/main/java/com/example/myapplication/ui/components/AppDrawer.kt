@@ -1,6 +1,6 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 
-package com.example.myapplication.ui.screens
+package com.example.myapplication.ui.components
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -9,15 +9,17 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-
-enum class PanelDest { ShopList, Favourites, Profile, Settings }
+import com.example.myapplication.ui.nav.PanelDest
 
 @Composable
-fun Panel(
+fun AppDrawer(
     selected: PanelDest,
     favouritesCount: Int = 0,
     onSelect: (PanelDest) -> Unit,
@@ -34,15 +36,17 @@ fun Panel(
         )
 
         NavigationDrawerItem(
-            label = { Text("Favourites") },
+            label = { Text("Favourites ($favouritesCount)") },
             selected = selected == PanelDest.Favourites,
             onClick = { onSelect(PanelDest.Favourites) },
-            icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-            badge = {
-                if (favouritesCount > 0) {
-                    BadgedBox(badge = { Badge { Text("$favouritesCount") } }) {}
-                }
-            }
+            icon = { Icon(Icons.Filled.Favorite, contentDescription = null) }
+        )
+
+        NavigationDrawerItem(
+            label = { Text("Settings") },
+            selected = selected == PanelDest.Settings,
+            onClick = { onSelect(PanelDest.Settings) },
+            icon = { Icon(Icons.Filled.Settings, contentDescription = null) }
         )
 
         NavigationDrawerItem(
@@ -53,10 +57,10 @@ fun Panel(
         )
 
         NavigationDrawerItem(
-            label = { Text("Settings") },
-            selected = selected == PanelDest.Settings,
-            onClick = { onSelect(PanelDest.Settings) },
-            icon = { Icon(Icons.Filled.Settings, contentDescription = null) }
+            label = { Text("Home") },
+            selected = selected == PanelDest.Home,
+            onClick = { onSelect(PanelDest.Home) },
+            icon = { Icon(Icons.Filled.Home, contentDescription = null) }
         )
     }
 }

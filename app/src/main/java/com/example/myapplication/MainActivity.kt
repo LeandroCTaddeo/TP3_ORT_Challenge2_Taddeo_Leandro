@@ -4,99 +4,92 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.ui.screens.*
+import com.example.myapplication.ui.model.Product
+import com.example.myapplication.ui.nav.PanelDest
+import com.example.myapplication.ui.nav.Screen
+import com.example.myapplication.ui.screens.FavoritesScreen
+import com.example.myapplication.ui.screens.HomeScreen
+import com.example.myapplication.ui.screens.ItemDetailsScreen
+import com.example.myapplication.ui.screens.ProfileScreen
+import com.example.myapplication.ui.screens.SettingsScreen
+import com.example.myapplication.ui.screens.ShopList
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         setContent {
             MyApplicationTheme {
-                val nav = rememberNavController()
-
-                val routes = mapOf(
-                    PanelDest.ShopList   to "shopList",
-                    PanelDest.Favourites to "favourites",
-                    PanelDest.Settings   to "settings",
-                    PanelDest.Profile    to "profile"
-                )
-
+                val navController = rememberNavController()
                 val favourites = remember { mutableStateListOf<Product>() }
 
-                Scaffold(Modifier.fillMaxSize()) { inner ->
-                    NavHost(
-                        navController = nav,
-                        startDestination = "home",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(inner)
-                    ) {
-                        composable("home") {
-                            HomeScreen(
-                                modifier = Modifier.fillMaxSize(),
-                                onSelectFromPanel = { dest ->
-                                    nav.navigate(routes.getValue(dest)) {
-                                        launchSingleTop = true
-                                    }
-                                }
-                            )
-                        }
+                fun goFromDrawer(dest: PanelDest) {
+                    val route = when (dest) {
+                        PanelDest.Home       -> Screen.Home.route
+                        PanelDest.ShopList   -> Screen.ShopList.route
+                        PanelDest.Favourites -> Screen.Favourites.route
+                        PanelDest.Settings   -> Screen.Settings.route
+                        PanelDest.Profile    -> Screen.Profile.route
+                    }
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                    }
+                }
 
-                        composable("shopList") {
-                            ShopList(
-                                modifier = Modifier.fillMaxSize(),
-                                favouritesCount = favourites.size,
-                                onAddFavourite = { p ->
-                                    if (favourites.none { it.id == p.id }) favourites += p
-                                },
-                                onPanelSelect = { dest ->
-                                    nav.navigate(routes.getValue(dest)) {
-                                        launchSingleTop = true
-                                    }
-                                }
-                            )
-                        }
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.Home.route
+                ) {
+                    composable(Screen.Home.route) {
+                        HomeScreen(
+                            onPanelSelect = { dest -> goFromDrawer(dest) }
+                        )
+                    }
 
-                        composable("favourites") {
-                            FavouritesScreen(
-                                items = favourites,
-                                modifier = Modifier.fillMaxSize(),
-                                onPanelSelect = { dest ->
-                                    nav.navigate(routes.getValue(dest)) {
-                                        launchSingleTop = true
-                                    }
+                    composable(Screen.ShopList.route) {
+                        ShopList(
+                            favouritesCount = favourites.size,
+                            onAddFavourite = { product ->
+                                if (favourites.none { it.id == product.id }) {
+                                    favourites.add(product)
                                 }
-                            )
-                        }
+                            },
+                            onPanelSelect = { dest -> goFromDrawer(dest) },
+                            onBuy = {
+                                navController.navigate(Screen.ItemDetails.route)
+                            }
+                        )
+                    }
 
-                        composable("settings") {
-                            SettingsScreen(
-                                modifier = Modifier.fillMaxSize(),
-                                onPanelSelect = { dest ->
-                                    nav.navigate(routes.getValue(dest)) {
-                                        launchSingleTop = true
-                                    }
-                                }
-                            )
-                        }
+                    composable(Screen.ItemDetails.route) {
+                        ItemDetailsScreen(
+                            onMenuClick = { navController.popBackStack() }
+                        )
+                    }
 
-                        composable("profile") {
-                            ProfileScreen(
-                                modifier = Modifier.fillMaxSize(),
-                                onBack = { nav.popBackStack() }
-                            )
-                        }
+                    composable(Screen.Favourites.route) {
+                        FavoritesScreen(
+                            favourites = favourites,
+                            onPanelSelect = { dest -> goFromDrawer(dest) }
+                        )
+                    }
+
+                    composable(Screen.Settings.route) {
+                        SettingsScreen(
+                            onPanelSelect = { dest -> goFromDrawer(dest) }
+                        )
+                    }
+
+                    composable(Screen.Profile.route) {
+                        ProfileScreen(
+                            onBack = { navController.popBackStack() }
+                        )
                     }
                 }
             }

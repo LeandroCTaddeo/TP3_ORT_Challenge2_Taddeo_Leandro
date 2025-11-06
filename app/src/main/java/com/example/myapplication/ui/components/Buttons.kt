@@ -17,10 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 
-// Paleta
 val DarkOrange = Color(0xFFBF5700)
 
 @Composable
@@ -28,21 +26,11 @@ fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    borderColor: Color = DarkOrange,
-    contentColor: Color = DarkOrange,
-    containerColor: Color = Color.White,
-    borderWidth: Dp = 2.dp,
-    cornerRadius: Dp = 12.dp,
 ) {
     Button(
         onClick = onClick,
         modifier = modifier,
-        shape = RoundedCornerShape(cornerRadius),
-        border = BorderStroke(borderWidth, borderColor),
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        )
+        shape = RoundedCornerShape(12.dp),
     ) {
         Text(text)
     }
@@ -53,17 +41,16 @@ fun SecondaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    containerColor: Color = Color.White,
+    contentColor: Color = DarkOrange,
     borderColor: Color = DarkOrange,
-    contentColor: Color = Color.White,
-    containerColor: Color = DarkOrange,
-    borderWidth: Dp = 2.dp,
-    cornerRadius: Dp = 12.dp,
+    cornerRadius: Dp = 12.dp
 ) {
-    Button(
+    OutlinedButton(
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(cornerRadius),
-        border = BorderStroke(borderWidth, borderColor),
+        border = BorderStroke(1.dp, borderColor),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = containerColor,
             contentColor = contentColor
@@ -72,56 +59,6 @@ fun SecondaryButton(
         Text(text)
     }
 }
-
-@Composable
-fun MenuButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-        .width(56.dp)
-        .height(46.dp),
-    cornerRadius: Dp = 12.dp,
-    containerColor: Color = Color.White,
-    contentColor: Color = Color.Gray,
-    content: @Composable () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier,
-        shape = RoundedCornerShape(cornerRadius),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        )
-    ) {
-        content()
-    }
-}
-
-@Composable
-fun MenuBars(
-    modifier: Modifier = Modifier,
-    barWidth: Dp = 22.dp,
-    barHeight: Dp = 2.dp,
-    gap: Dp = 3.dp,
-    color: Color = Color.Gray
-) {
-    Column(
-        modifier = modifier.width(barWidth),
-        verticalArrangement = Arrangement.spacedBy(gap),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        repeat(3) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(barHeight)
-                    .clip(RoundedCornerShape(1.dp))
-                    .background(color)
-            )
-        }
-    }
-}
-
 
 @Composable
 fun BottomBarRectangular(
@@ -168,18 +105,14 @@ fun BottomBarRectangular(
             }
         }
 
-        Button(
-            onClick = onClickCenter,
-            shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = DarkOrange,
-                contentColor = Color.White
-            ),
-            contentPadding = PaddingValues(0.dp),
+        Box(
             modifier = Modifier
                 .size(centerSize)
-                .align(Alignment.BottomCenter)
-                .offset(y = -centerOverlap)
+                .align(Alignment.TopCenter)
+                .clip(CircleShape)
+                .background(DarkOrange)
+                .clickable { onClickCenter() },
+            contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(id = R.drawable.boton3),
@@ -201,48 +134,4 @@ private fun NavImage(
             .size(50.dp)
             .clickable { onClick() }
     )
-}
-
-@Composable
-fun CenterBuyButton(
-    modifier: Modifier = Modifier,
-    text: String = "Buy",
-    onClick: () -> Unit = {}
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-            .height(44.dp)
-            .widthIn(min = 120.dp),
-        shape = RoundedCornerShape(22.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = DarkOrange,
-            contentColor = Color.White
-        ),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(24.dp)
-                .clip(CircleShape)
-                .background(Color.White.copy(alpha = 0.15f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("+", color = Color.White)
-        }
-        Spacer(Modifier.width(8.dp))
-        Text(text)
-    }
-}
-
-
-@Composable
-fun LinkTextButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TextButton(onClick = onClick, modifier = modifier) {
-        Text(text = text, color = Color.Blue, fontSize = 20.sp)
-    }
 }

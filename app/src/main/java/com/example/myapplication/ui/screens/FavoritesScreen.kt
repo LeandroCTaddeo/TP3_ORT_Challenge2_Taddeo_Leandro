@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 
 package com.example.myapplication.ui.screens
 
@@ -6,7 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -17,29 +17,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.R
-import com.example.myapplication.ui.components.*
+import com.example.myapplication.ui.components.AppDrawer
+import com.example.myapplication.ui.components.BottomBarRectangular
+import com.example.myapplication.ui.components.TopBar
+import com.example.myapplication.ui.components.topBarHeight
+import com.example.myapplication.ui.model.Product
+import com.example.myapplication.ui.nav.PanelDest
 import kotlinx.coroutines.launch
 
+private val ScreenBg = Color(0xFFF4EAE7)
+private val Accent = Color(0xFFA5522A)
+
 @Composable
-fun FavouritesScreen(
-    items: List<Product>,
-    modifier: Modifier = Modifier,
-    onPanelSelect: (PanelDest) -> Unit = {}
+fun FavoritesScreen(
+    favourites: List<Product>,
+    onPanelSelect: (PanelDest) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val topBarHeight = 64.dp
-    val bottomPadding = 96.dp
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            Panel(
+            AppDrawer(
                 selected = PanelDest.Favourites,
-                favouritesCount = items.size,
+                favouritesCount = favourites.size,
                 onSelect = { dest ->
                     scope.launch { drawerState.close() }
                     onPanelSelect(dest)
@@ -47,70 +51,52 @@ fun FavouritesScreen(
             )
         }
     ) {
-        Box(modifier.fillMaxSize()) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(ScreenBg)
+        ) {
+            TopBar(
+                title = "Favourites",
+                onMenuClick = { scope.launch { drawerState.open() } },
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
 
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(
-                        top = topBarHeight + 16.dp,
-                        bottom = bottomPadding,
+                        top = topBarHeight() + 16.dp,
                         start = 16.dp,
-                        end = 16.dp
-                    )
+                        end = 16.dp,
+                        bottom = 110.dp
+                    ),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (items.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) { Text("No favourites yet") }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(items) { p ->
-                            FavouriteRow(p)
-                        }
-                    }
+                itemsIndexed(favourites) { index, p ->
+                    FavouriteItemCard(index = index + 1, product = p)
                 }
-
-                Spacer(Modifier.height(12.dp))
-
-                CenterBuyButton(
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
             }
 
-            // Top bar
-            Row(
+            Surface(
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth()
-                    .height(topBarHeight)
-                    .background(Color.White)
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 72.dp),
+                color = Accent,
+                shape = RoundedCornerShape(999.dp),
+                shadowElevation = 6.dp
             ) {
-                MenuButton(onClick = { scope.launch { drawerState.open() } }) { MenuBars() }
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    text = "Favourites",
-                    color = Color.Black,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.people),
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp).clip(CircleShape)
-                )
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "+", color = Color.White)
+                    Spacer(Modifier.width(6.dp))
+                    Text(text = "Buy", color = Color.White)
+                }
             }
 
-            // Bottom bar
             BottomBarRectangular(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -121,11 +107,15 @@ fun FavouritesScreen(
 }
 
 @Composable
-private fun FavouriteRow(p: Product) {
-    Card(
+private fun FavouriteItemCard(
+    index: Int,
+    product: Product
+) {
+    Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(16.dp),
+        color = Color.White,
+        shadowElevation = 2.dp
     ) {
         Row(
             modifier = Modifier
@@ -133,27 +123,33 @@ private fun FavouriteRow(p: Product) {
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFA5522A)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = index.toString(), color = Color.White)
+            }
+
+            Spacer(Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(text = product.title, color = Color(0xFF4A3B35))
+                Text(text = product.price, color = Color(0xFF8D7A72))
+            }
+
+            Spacer(Modifier.width(12.dp))
+
             Image(
-                painter = painterResource(id = p.imageRes),
+                painter = painterResource(id = product.imageRes),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(72.dp)
-                    .clip(RoundedCornerShape(10.dp))
-            )
-            Spacer(Modifier.width(12.dp))
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(p.title, style = MaterialTheme.typography.bodyLarge, color = Color.Black)
-                Text(p.price, style = MaterialTheme.typography.bodyMedium, color = Color(0xFF6B6B6B))
-            }
-            Spacer(Modifier.width(12.dp))
-            SecondaryButton(
-                text = "Buy",
-                onClick = { },
-                containerColor = DarkOrange,
-                contentColor = Color.White
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(12.dp))
             )
         }
     }
